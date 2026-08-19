@@ -24,6 +24,23 @@ typedef struct
   
 }Chip8;
 
+void Cycle(Chip8 *cpu, u_int8_t *memory)
+{
+  //fetch
+  u_int16_t instruction = (memory[cpu->pc] << 8 | memory[cpu->pc + 1]);
+  cpu->pc += 2;
+
+  //decode
+  if((instruction & 0xF000) == 0x6000)
+  {
+    u_int8_t x = (instruction & 0x0F00) >> 8;
+    u_int8_t nn = (instruction & 0x00FF);
+
+    //execute
+    cpu->v[x] = nn;
+  }
+
+}
  
 int main()
 {
