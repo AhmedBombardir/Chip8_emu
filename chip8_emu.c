@@ -31,14 +31,78 @@ void Cycle(Chip8 *cpu, u_int8_t *memory)
   cpu->pc += 2;
 
   //decode
-  if((instruction & 0xF000) == 0x6000)
-  {
-    u_int8_t x = (instruction & 0x0F00) >> 8;
-    u_int8_t nn = (instruction & 0x00FF);
+  u_int8_t x = (instruction & 0x0F00) >> 8;
+  u_int8_t y = (instruction & 0x00F0) >> 4;
+  u_int8_t n = (instruction & 0x000F);
+  u_int8_t nn = (instruction & 0x00FF);
+  u_int8_t nnn = (instruction & 0x0FFF);
 
-    //execute
-    cpu->v[x] = nn;
+  switch((instruction & 0xF000) >> 12)
+  {
+    case 0x0:
+      
+      switch(nn)
+      {
+        //clear screen
+        case 0xE0:
+          break;
+
+        //return from a subroutine
+        case 0xEE:
+          break;
+
+        default:
+          SDL_Log("Unknown opcode: 0x%04X", instruction);
+          break;
+      }
+
+      break;
+
+    //put nn value in register[x]
+    case 0x6:
+      cpu->v[x] = nn;
+      break;
+
+    //add nn value to register[x]
+    case 0x7:
+      cpu->v[x] += nn;
+      break;
+
+    case 0x8:
+
+      switch(n)
+      {
+        case 0x0:
+          break;
+
+        case 0x1:
+          break;
+
+        case 0x2:
+          break;
+
+        case 0x3:
+          break;
+
+        case 0x4:
+          break;
+
+        case 0x5:
+          break;
+
+        case 0x6:
+          break;
+
+        case 0x7:
+          break;
+
+        case 0xE:
+          break;
+
+      }
   }
+  //execute
+  cpu->v[x] = nn;
 
 }
  
