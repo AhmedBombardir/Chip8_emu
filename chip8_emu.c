@@ -35,7 +35,7 @@ void Cycle(Chip8 *cpu, u_int8_t *memory)
   u_int8_t y = (instruction & 0x00F0) >> 4;
   u_int8_t n = (instruction & 0x000F);
   u_int8_t nn = (instruction & 0x00FF);
-  u_int8_t nnn = (instruction & 0x0FFF);
+  u_int16_t nnn = (instruction & 0x0FFF);
 
   switch((instruction & 0xF000) >> 12)
   {
@@ -73,21 +73,45 @@ void Cycle(Chip8 *cpu, u_int8_t *memory)
       switch(n)
       {
         case 0x0:
+          cpu->v[x] = cpu->v[y];
           break;
 
         case 0x1:
+          cpu->v[x] = cpu->v[x] | cpu->v[y];
           break;
 
         case 0x2:
+          cpu->v[x] = cpu->v[x] & cpu->v[y];
           break;
 
         case 0x3:
+          cpu->v[x] = cpu->v[x] ^ cpu->v[y];
           break;
 
         case 0x4:
+        {
+          u_int16_t x_helper = cpu->v[x];
+          u_int16_t y_helper = cpu->v[y];
+
+          if((x_helper + y_helper) <= 255)
+          {
+            cpu->v[x] += cpu->v[y];
+            cpu->v[0xF] = 0;
+          }else
+          {
+            cpu->v[0xF] = 1;
+          }           
+
           break;
+        }
 
         case 0x5:
+          if(cpu->v[x] >= cpu->v[y])
+            cpu->v[0xF] = 1;
+          else
+            cpu->v[0xF] = 0;
+
+          cpu->v[x] -= cpu->v[y];
           break;
 
         case 0x6:
@@ -98,11 +122,10 @@ void Cycle(Chip8 *cpu, u_int8_t *memory)
 
         case 0xE:
           break;
-
       }
+
+    break;
   }
-  //execute
-  cpu->v[x] = nn;
 
 }
  
